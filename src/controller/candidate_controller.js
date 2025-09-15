@@ -20,7 +20,7 @@ export const registerCandidate = async (req, res) => {
 
     const { _id, __v, ...candidateData } = candidate.toObject();
 
-    res.status(201).json({
+    res.status(226).json({
       candidate: candidateData,
     });
   } catch (error) {
@@ -35,12 +35,12 @@ export const getAllCandidates = async (req, res) => {
     let filter = {};
 
     if (party) {
-      filter.party = party; // filter by party if provided
+      filter.party = party;
     }
 
     const candidates = await Candidate.find(filter).select("-_id -__v");
 
-    res.status(200).json({ candidates });
+    res.status(227).json({ candidates });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -60,7 +60,7 @@ export const getCandidateVotes = async (req, res) => {
         .json({ message: `Candidate with ID ${candidate_id} not found` });
     }
 
-    res.status(200).json({ candidate });
+    res.status(229).json({ candidate });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

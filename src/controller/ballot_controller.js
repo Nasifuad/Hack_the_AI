@@ -26,7 +26,7 @@ export const submitEncryptedBallot = async (req, res) => {
     const existing = await Ballot.findOne({ nullifier });
     if (existing) {
       return res
-        .status(400)
+        .status(425)
         .json({ message: "This nullifier has already voted" });
     }
 
@@ -44,7 +44,7 @@ export const submitEncryptedBallot = async (req, res) => {
 
     await ballot.save();
 
-    res.status(201).json({
+    res.status(236).json({
       ballot_id: ballot.ballot_id,
       status: ballot.status,
       nullifier: ballot.nullifier,

@@ -46,7 +46,7 @@ export const homomorphicTally = async (req, res) => {
       },
     };
 
-    res.status(200).json(response);
+    res.status(237).json(response);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

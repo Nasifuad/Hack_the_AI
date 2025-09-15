@@ -15,10 +15,6 @@ const laplaceMechanism = (count, epsilon) => {
   );
 };
 
-/**
- * Differential privacy analytics
- * POST /api/analytics/dp
- */
 export const dpAnalysis = async (req, res) => {
   try {
     const { election_id, query, epsilon, delta } = req.body;
@@ -41,12 +37,10 @@ export const dpAnalysis = async (req, res) => {
         .json({ message: "Currently only voter_age_bucket supported" });
     }
 
-    // Fetch voters according to filter
     const voters = await Voter.find(filter || {})
       .select("age -_id")
       .lean();
 
-    // Count voters per bucket
     const histogram = buckets.map((bucket) => {
       const [min, max] = bucket.split("-").map(Number);
       let count = voters.filter((v) => {
@@ -55,12 +49,10 @@ export const dpAnalysis = async (req, res) => {
         return age >= min && age <= max;
       }).length;
 
-      // Add Laplace noise for differential privacy
-      const noisyCount = laplaceMechanism(count, epsilon);
       return { bucket, count: noisyCount };
     });
 
-    res.status(200).json({
+    res.status(238).json({
       election_id,
       query,
       epsilon,

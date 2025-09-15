@@ -6,8 +6,8 @@ export const registerVoter = async (req, res) => {
 
     const existingVoter = await Voter.findOne({ voter_id });
     if (existingVoter) {
-      return res.status(400).json({
-        message: `Voter with ID ${existingVoter.voter_id} already exists`,
+      return res.status(409).json({
+        message: `Voter with id: ${existingVoter.voter_id} already exists`,
       });
     }
 
@@ -95,7 +95,7 @@ export const deleteVoter = async (req, res) => {
       return res.status(404).json({ message: "Voter not found" });
     }
 
-    res.status(200).json({ message: "Voter deleted successfully" });
+    res.status(200).json({ message: `Voter with id: ${voter_id} deleted` });
   } catch (error) {
     res
       .status(500)

@@ -5,7 +5,6 @@ export const castVote = async (req, res) => {
   try {
     const { voter_id, candidate_id, weight } = req.body;
 
-    // Check if voter exists
     const voter = await Voter.findOne({ voter_id });
     if (!voter) {
       return res
@@ -13,29 +12,25 @@ export const castVote = async (req, res) => {
         .json({ message: `Voter with ID ${voter_id} not found` });
     }
 
-    // Check if voter has already voted
     if (voter.hasVoted) {
       return res
-        .status(400)
+        .status(423)
         .json({ message: "Voter has already cast their vote" });
     }
 
-    // Check if candidate exists
     const candidate = await Candidate.findOne({ candidate_id });
     if (!candidate) {
       return res
-        .status(404)
+        .status(423)
         .json({ message: `Candidate with ID ${candidate_id} not found` });
     }
 
-    // Increment candidate votes by weight (default 1)
     const voteWeight = weight || 1;
     candidate.votes += voteWeight;
     await candidate.save();
 
-    // Create vote record
     const vote = new Vote({
-      vote_id: Date.now(), // or provide custom ID
+      vote_id: Date.now(),
       voter_id,
       candidate_id,
       weight: voteWeight,
@@ -43,11 +38,10 @@ export const castVote = async (req, res) => {
     });
     await vote.save();
 
-    // Mark voter as voted
     voter.hasVoted = true;
     await voter.save();
 
-    res.status(201).json({
+    res.status(228).json({
       vote: {
         vote_id: vote.vote_id,
         voter_id: vote.voter_id,
@@ -68,7 +62,7 @@ export const getVotingResults = async (req, res) => {
       .select("candidate_id name party votes -_id")
       .sort({ votes: -1 });
 
-    res.status(200).json({ results });
+    res.status(231).json({ results });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -76,7 +70,6 @@ export const getVotingResults = async (req, res) => {
 };
 export const getWinners = async (req, res) => {
   try {
-    // Find the maximum votes first
     const topCandidate = await Candidate.findOne()
       .sort({ votes: -1 })
       .select("votes");
@@ -87,12 +80,11 @@ export const getWinners = async (req, res) => {
 
     const maxVotes = topCandidate.votes;
 
-    // Find all candidates with the maximum votes (to handle ties)
     const winners = await Candidate.find({ votes: maxVotes }).select(
       "candidate_id name votes -_id"
     );
 
-    res.status(200).json({ winners });
+    res.status(232).json({ winners });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -113,7 +105,7 @@ export const getVoteTimeline = async (req, res) => {
       .select("vote_id timestamp -_id")
       .sort({ timestamp: 1 });
 
-    res.status(200).json({
+    res.status(233).json({
       candidate_id: Number(candidate_id),
       timeline: votes,
     });
@@ -124,7 +116,6 @@ export const getVoteTimeline = async (req, res) => {
 };
 import Vote from "../models/vote_model.js";
 
-// Get votes for a candidate within a specific time range
 export const getVotesInRange = async (req, res) => {
   try {
     const { candidate_id, from, to } = req.query;
@@ -142,7 +133,6 @@ export const getVotesInRange = async (req, res) => {
       return res.status(400).json({ message: "Invalid date format" });
     }
 
-    // Find votes in range
     const votes = await Vote.find({
       candidate_id: Number(candidate_id),
       timestamp: { $gte: fromDate, $lte: toDate },
@@ -153,7 +143,7 @@ export const getVotesInRange = async (req, res) => {
       0
     );
 
-    res.status(200).json({
+    res.status(235).json({
       candidate_id: Number(candidate_id),
       from: fromDate.toISOString(),
       to: toDate.toISOString(),
