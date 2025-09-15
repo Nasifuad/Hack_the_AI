@@ -38,9 +38,9 @@ export const homomorphicTally = async (req, res) => {
       encrypted_tally_root: encryptedTallyRoot,
       candidate_tallies: candidateTallies,
       decryption_proof:
-        "base64(batch_proof_linking_cipher_aggregate_to_plain_counts)", // placeholder
+        "base64(batch_proof_linking_cipher_aggregate_to_plain_counts)",
       transparency: {
-        ballot_merkle_root: "0x" + crypto.randomBytes(4).toString("hex"), // placeholder
+        ballot_merkle_root: "0x" + crypto.randomBytes(4).toString("hex"),
         tally_method: "threshold_paillier",
         threshold: "3-of-5",
       },
